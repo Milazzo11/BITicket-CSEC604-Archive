@@ -10,6 +10,8 @@ from typing import List, Optional, Tuple, Union
 
 from app.crypto.symmetric import SKE
 
+from fastapi import HTTPException
+
 from .storage import event as event_db
 
 
@@ -17,7 +19,7 @@ from .storage import event as event_db
 
 
 class Data(BaseModel):
-    event_key: bytes = Field(default_factory=SKE.key(), description="Ticket granting master key for event")
+    event_key: bytes = Field(default_factory=SKE.key, description="Ticket granting master key for event")
     owner_public_key: str = Field(..., description="Public key of event creator")
     returned: List[int] = Field([], description="Returned (and not yet reissued) ticket numbers")
 
@@ -95,14 +97,28 @@ class Event(BaseModel):
         event_db.create(self.to_dict(), event_data.to_dict())
 
 
+    def next_ticket(self) -> int:
+        """
+        Issue event for a ticket ((do better description))
+        """
+
+        if self.issued >= self.tickets:
+            raise HTTPException(status_code=401, detail="All tickets registered")
+        
+        self.issued += 1
+
+        return self.issued
+
+
+
 
 
 
 
 
 class EventData(BaseModel):
-    event: Event = Field(..., "User-facing event packet")
-    data: Data = Field(..., "Event data")
+    event: Event = Field(..., description="User-facing event packet")
+    data: Data = Field(..., description="Event data")
 
 
     @classmethod

@@ -12,7 +12,7 @@ from app.util import display
 from dateutil import parser
 
 from config import (
-    PRIV_KEY_FILE, PUB_KEY_FILE, EVENTS_FILE, DATETIME_FORMAT, EXCHANGE_LIMIT
+    PRIV_KEY_FILE, PUB_KEY_FILE
 )
 
 

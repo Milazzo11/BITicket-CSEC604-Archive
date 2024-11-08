@@ -160,7 +160,17 @@ class AES:
             # decode plaintext as a UTF-8 string
 
         return plaintext
-        
+    
+
+    def iv_b64(self) -> str:
+        """
+        Return the base64 encoded cipher IV.
+
+        :return: base64 encoded cipher IV
+        """
+
+        return base64.b64encode(self.iv).decode("utf-8")
+
         
 SKE = AES
 # standard symmetric key encryption object

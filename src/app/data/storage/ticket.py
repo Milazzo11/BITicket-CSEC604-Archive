@@ -1,6 +1,6 @@
 
 
-def register(event_id: str) -> int:
+def register(event_id: str, ticket_number: int) -> int:
     """
     """
     ### This doesn't need a bitstring... literally just increment and return remaining ticket count

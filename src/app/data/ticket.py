@@ -3,29 +3,37 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 from .storage import ticket as ticket_db
+from .event import EventData
+
+
+from app.crypto.symmetric import SKE
+
+from fastapi import HTTPException
 
 
 class Ticket(BaseModel):
     event_id: str
     public_key: str
     number: int
-
+    event_data: EventData
 
     @classmethod
     def register(self, event_id, public_key, number: Optional[int] = None) -> "Ticket":###maybe return ticket object
         
-        ### TODO - implement
+        event_data = EventData.load(event_id)
 
-        ## fetch event by ID (and ensure ticket slots still remail)
+        if number is None:
+            number = event_data.event.next_ticket()
 
-        ## update database ** (change redemption bit string)
+        ticket_db.register(event_id, number)
 
-        ## generate ticket string
-        
-        ## return
+        # <<describe better>> load data, increment ticket/verify, change database to reflect increment
 
         return self(
-            event_id=event_id, public_key=public_key, number=0 ## MAKE THIS THE REAL THING LATER
+            event_id=event_id,
+            public_key=public_key,
+            number=number,
+            event_data=event_data
         )
 
 
@@ -33,16 +41,27 @@ class Ticket(BaseModel):
     def load(self, event_id: str, ticket: str) -> "Ticket":
         """
         """
-        ### probably turn this into like "events.ticket" or something
 
-        # maybe keep this file just for ticket obj that converts from ticket str to obj and vice versa
-        ## but events should prob just use it, not API directly
-        ### TODO - implement
+        event_data = EventData.load(event_id)
 
+        data = self.event_data.data
+        cipher = SKE(key=data.event_key)
+
+        decrypted_ticket_raw = cipher.decrypt(ticket)
+        ticket_data = decrypted_ticket_raw.split(" ")
+
+        if ticket_data[0] != event_id:
+            raise HTTPException(status_code=401, detail="Ticket data does not match event ID")
+            # ensure ticket event ID matches the event ID passed by client
+        
         return self(
-            event_id=event_id, public_key="", number=0 ## MAKE THIS THE REAL THING LATER
+            event_id=event_id,
+            public_key=ticket_data[1],
+            number=ticket_data[2],
+            event_data=event_data
         )
-    
+
+
 
     def cancel(self) -> None:
         """
@@ -58,6 +77,9 @@ class Ticket(BaseModel):
         #
         # ^^ this also solves TICKET_QUEUE_PROBLEM -- users can always transfer tickets back to owner
         ###  and then the owner can fill the queue up with requests as it empties (prevents server misuse, but still doesn't annoy clients)
+
+        ### NEXT_TICKET in events just needs to be updated, with that added list
+        #### might actually move that func to DATA
     
 
     def redeem(self) -> None:
@@ -71,7 +93,16 @@ class Ticket(BaseModel):
         """
         Convert ticket data to encrypted string.
         """
-        ### TODO - implement
+
+        data = self.event_data.data
+        cipher = SKE(key=data.event_key)
+
+        ticket_string_raw = self.event_id + " " + self.public_key + " " + self.number
+        encrypted_string = cipher.encrypt(ticket_string_raw)
+
+        ticket_string = cipher.iv_b64() + "-" + encrypted_string
+
+        return ticket_string
 
 
     def verify(self):
