@@ -21,9 +21,5 @@ class RedeemResponse(BaseModel):
         """
         """
 
-        ticket = Ticket.load(request.event_id, request.ticket)
-        
-        if ticket.public_key != public_key:
-            raise HTTPException(status_code=401, detail="Authorization key incorrect")
-        
-        ticket.redeem() ## throws err on failure
+        ticket = Ticket.load(request.event_id, public_key, request.ticket)
+        ticket.redeem()

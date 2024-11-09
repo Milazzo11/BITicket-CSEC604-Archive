@@ -37,6 +37,17 @@ class Data(BaseModel):
 
     def to_dict(self) -> dict:
         return self.__dict__
+    
+
+    def reissue_ticket(self) -> Optional[int]:
+        """
+        """
+
+        if len(self.returned) != 0:
+            return self.returned.pop()
+        
+        else:
+            return None
 
 
 
@@ -99,7 +110,6 @@ class Event(BaseModel):
 
     def next_ticket(self) -> int:
         """
-        Issue event for a ticket ((do better description))
         """
 
         if self.issued >= self.tickets:
@@ -126,7 +136,7 @@ class EventData(BaseModel):
         """
         """
 
-        dict = event_db.load_full()
+        dict = event_db.load_full(event_id)
 
         return self(
             event=Event.from_dict(dict["event"]),
@@ -145,6 +155,15 @@ class EventData(BaseModel):
             "event": self.event.to_dict(),
             "data": self.event.to_dict()
         }
+    
+
+    def next_ticket(self) -> int:
+        issue_num = self.data.reissue_ticket()
+
+        if issue_num is None:
+            issue_num = self.event.next_ticket()
+
+        return issue_num
 
 
 

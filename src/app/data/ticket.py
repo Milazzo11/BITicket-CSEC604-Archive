@@ -10,6 +10,11 @@ from app.crypto.symmetric import SKE
 
 from fastapi import HTTPException
 
+from app.crypto import hash
+import base64
+
+from config import RETURN_QUEUE_MAX
+
 
 class Ticket(BaseModel):
     event_id: str
@@ -23,11 +28,9 @@ class Ticket(BaseModel):
         event_data = EventData.load(event_id)
 
         if number is None:
-            number = event_data.event.next_ticket()
+            number = event_data.next_ticket()
 
         ticket_db.register(event_id, number)
-
-        # <<describe better>> load data, increment ticket/verify, change database to reflect increment
 
         return self(
             event_id=event_id,
@@ -38,25 +41,36 @@ class Ticket(BaseModel):
 
 
     @classmethod
-    def load(self, event_id: str, ticket: str) -> "Ticket":
+    def load(self, event_id: str, public_key: str, ticket: str) -> "Ticket":
         """
         """
 
         event_data = EventData.load(event_id)
 
+        b64_iv, ticket = ticket.split("-")
         data = self.event_data.data
-        cipher = SKE(key=data.event_key)
+
+        cipher = SKE(key=data.event_key, iv=base64.b64decode(b64_iv))
 
         decrypted_ticket_raw = cipher.decrypt(ticket)
-        ticket_data = decrypted_ticket_raw.split(" ")
+        decrypted_ticket, ticket_hash = decrypted_ticket_raw.split(" ")
+        
+        if hash.generate(decrypted_ticket) != ticket_hash:
+            raise HTTPException(status_code=400, detail="Ticket hash cannot be verified")
+
+        ticket_data = decrypted_ticket.split("\\")
 
         if ticket_data[0] != event_id:
-            raise HTTPException(status_code=401, detail="Ticket data does not match event ID")
+            raise HTTPException(status_code=400, detail="Ticket data does not match event ID")
             # ensure ticket event ID matches the event ID passed by client
+
+        if ticket_data[1] != public_key:
+            raise HTTPException(status_code=400, detail="Ticket invalid (non-matching public key)")
+            # ensure ticket public key matches key of client making request
         
         return self(
             event_id=event_id,
-            public_key=ticket_data[1],
+            public_key=public_key,
             number=ticket_data[2],
             event_data=event_data
         )
@@ -66,27 +80,26 @@ class Ticket(BaseModel):
     def cancel(self) -> None:
         """
         """
-        ### cancel (return) a ticket
-        ### TODO - actually deal with return logic
-        #
-        # --- have a list of returned tickets; these tickets will be reissued with precedence; create a max list size (invalidate return if over)
-        # authenticated ticket return (write down somewhere):
-        # - user returns ticket to event owner
-        # - event owner can then obviously verify ticket return
-        # - event owner returns ticket to server
-        #
-        # ^^ this also solves TICKET_QUEUE_PROBLEM -- users can always transfer tickets back to owner
-        ###  and then the owner can fill the queue up with requests as it empties (prevents server misuse, but still doesn't annoy clients)
 
-        ### NEXT_TICKET in events just needs to be updated, with that added list
-        #### might actually move that func to DATA
-    
+        data = self.event_data.data
 
+        if len(data.returned) >= RETURN_QUEUE_MAX:
+            raise HTTPException(401, detail="Return queue full")
+        
+        ticket_db.cancel(self.event_id, self.number)
+
+        
     def redeem(self) -> None:
-        pass
-        ## this should be part of Ticket
-        ## throw an error on failure
-        ### TODO - implement
+        """
+        """
+
+        if not ticket_db.redeem(self.event_id, self.number):
+            raise HTTPException(400, detail="Ticket has already been redeemed")
+        
+
+    def verify(self):
+        if not ticket_db.verify(self.event_id, self.number):
+            raise HTTPException(403, detail="Ticket has not yet been redeemed")
 
 
     def pack(self) -> str:
@@ -97,17 +110,17 @@ class Ticket(BaseModel):
         data = self.event_data.data
         cipher = SKE(key=data.event_key)
 
-        ticket_string_raw = self.event_id + " " + self.public_key + " " + self.number
-        encrypted_string = cipher.encrypt(ticket_string_raw)
+        ticket_string_raw = self.event_id + "\\" + self.public_key + "\\" + self.number
+        ticket_string_hash = hash.generate(ticket_string_raw)
 
+        encrypted_string = cipher.encrypt(ticket_string_raw + " " + ticket_string_hash)
         ticket_string = cipher.iv_b64() + "-" + encrypted_string
 
         return ticket_string
 
 
-    def verify(self):
-        pass
-        ### TODO - implement
+
+
 
 
 ### thought -- ticket stuff seems logical to use OOP (since everything ticket related can just be handled in here)

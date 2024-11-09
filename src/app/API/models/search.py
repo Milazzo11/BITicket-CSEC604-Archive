@@ -39,5 +39,3 @@ class SearchResponse(BaseModel):
 
         else:
             self.events = event.search(request.text, request.limit)
-
-#####

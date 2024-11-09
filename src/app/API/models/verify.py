@@ -21,10 +21,5 @@ class VerifyResponse(BaseModel):
         """
         """
 
-        ticket = Ticket.load(request.event_id, request.ticket)
-        # this will also verify request.event_id == ticket.event_id
-
-        if ticket.public_key != public_key:
-            raise HTTPException(status_code=401, detail="Ticket invalid (non-matching key)")
-        
-        ticket.verify()## this should just raise HTTPException on error, not return 
+        ticket = Ticket.load(request.event_id, public_key, request.ticket)
+        ticket.verify()

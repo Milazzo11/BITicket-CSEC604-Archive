@@ -30,13 +30,9 @@ class TransferResponse(BaseModel):
         transfer_data = request.transfer.unwrap()
 
         if transfer_data.transfer_public_key != public_key:
-            raise HTTPException(status_code=401, detail="Authorization key incorrect")
+            raise HTTPException(status_code=400, detail="Authorization key incorrect")
         
-        old_ticket = Ticket.load(request.event_id, transfer_data.ticket)
-
-        if request.transfer.public_key != old_ticket.public_key:
-            raise HTTPException(status_code=401, detail="Authorization key incorrect")
-
+        old_ticket = Ticket.load(request.event_id, request.transfer.public_key, transfer_data.ticket)
         request.transfer.authenticate()
 
         new_ticket = Ticket.register(

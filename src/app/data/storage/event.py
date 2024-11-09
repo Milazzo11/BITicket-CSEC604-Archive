@@ -34,5 +34,3 @@ def create(event: dict, event_data: dict) -> None:##prob pass data here too (OR 
     """
     """
     ## conversion from objects to DB (including weird intemediate steps) prob makes the most sense here
-
-

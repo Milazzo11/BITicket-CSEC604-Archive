@@ -5,6 +5,8 @@ def register(event_id: str, ticket_number: int) -> int:
     """
     ### This doesn't need a bitstring... literally just increment and return remaining ticket count
 
+    #### <- in here, if "returned list" in data contains ticket number, remove it
+
 
 
 
@@ -27,5 +29,10 @@ def cancel(event_id: str, ticket_number: int) -> bool:
 
 
 def redeem(event_id: str, ticket_number: int) -> bool:
+    """
+    """
+
+
+def verify(event_id: str, ticket_number: int) -> bool:
     """
     """
