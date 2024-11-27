@@ -30,6 +30,10 @@ class Ticket(BaseModel):
         if number is None:
             number = event_data.next_ticket()
 
+        else:
+            ticket_db.cancel(event_id, number)
+            # cancel current ticket version
+
         ticket_db.register(event_id, number)
 
         return self(
@@ -86,7 +90,10 @@ class Ticket(BaseModel):
         if len(data.returned) >= RETURN_QUEUE_MAX:
             raise HTTPException(401, detail="Return queue full")
         
-        ticket_db.cancel(self.event_id, self.number)
+        if not ticket_db.cancel(self.event_id, self.number):
+            raise HTTPException(400, detail="Maximum ticket cancellations reached")
+
+        ticket_db.reissue(self.event_id, self.number)
 
         
     def redeem(self) -> None:

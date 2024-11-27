@@ -12,7 +12,7 @@ import uuid
 
 from app.crypto.asymmetric import AKE
 
-from config import TIMESTAMP_ERROR
+from config import TIMESTAMP_ERROR, STATE_CLEANUP_INTERVAL
 
 ### encrypted ticktu must encrypt some punlic key data to validate owner
 
@@ -45,9 +45,17 @@ from config import TIMESTAMP_ERROR
 
 ### TODO - prob rework crypto libs to allow JWT and JWE for dict type (but do Union[bytes, str, dict] to generalize)
 
-
+from threading import Lock
 
 T = TypeVar("T")
+
+
+
+
+id_store = {}
+store_lock = Lock()  # To handle concurrency
+
+next_cleanup = time.time() + STATE_CLEANUP_INTERVAL
 
 
 
@@ -94,24 +102,50 @@ class Auth(BaseModel, Generic[T]):
 
     def unwrap(self) -> T:
         return self.data.content
+    
 
 
-    def authenticate(self, challenge_verif: callable = lambda _: True) -> T:
+    def authenticate(self, challenge_verif: callable = lambda _: None) -> T:
         """
         """
+
+        global next_cleanup
 
         data_json = self.data.model_dump_json()
         cipher = AKE(public_key=self.public_key)
 
-        ### TODO - ID validation at some point as well
+        ### TODO - (done)
         ### verify that ID is unique within timeframe to prevent replay
         ### call "challenge_verif" to confirm completion of additional complexity challenge (not to be implemented in this version)
+
+        now = time.time()
+
+        if abs(now - self.data.timestamp) > TIMESTAMP_ERROR:
+            raise HTTPException(status_code=401, detail="Timestamp sync failure")
+
+        with store_lock:
+            if self.data.id in id_store:
+                raise HTTPException(status_code=400, detail="Duplicate request ID detected.")
+            
+            id_store[self.data.id] = now
+
+        
+        if next_cleanup <= now:
+            with store_lock:
+                for key, value in id_store.items():
+                    if abs(now - value) > TIMESTAMP_ERROR:
+                        del id_store[key]
+
+            next_cleanup = now + STATE_CLEANUP_INTERVAL
+
+
+        challenge_verif(self.data)
+        
 
         if not cipher.verify(self.signature, data_json):
             raise HTTPException(status_code=401, detail="Authentication failed")
         
-        if abs(time.time() - self.data.timestamp) > TIMESTAMP_ERROR:
-            raise HTTPException(status_code=401, detail="Timestamp sync failure")
+        
         
         return self.data.content
 

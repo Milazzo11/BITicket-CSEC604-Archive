@@ -17,7 +17,7 @@ PRIV_KEY_FILE = os.path.join("data", "priv.key")
 PUB_KEY_FILE = os.path.join("data", "pub.key")
 
 
-EVENTS_FILE = os.path.join("data", "events.db")
+DB_FILE = os.path.join("data", "events.db")
 ### TODO - rename var prob
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -25,6 +25,10 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 TIMESTAMP_ERROR = 3
 # timestamp error allowance (in seconds) for requests
+
+
+STATE_CLEANUP_INTERVAL = 10
+
 
 
 RETURN_QUEUE_MAX = 10

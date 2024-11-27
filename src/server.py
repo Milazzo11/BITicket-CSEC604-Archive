@@ -44,3 +44,5 @@ async def redeem_ticket(data: Auth[RedeemRequest]) -> Auth[RedeemResponse]:
 @app.get("/verify", description="Verify (as an event owner) that a user has redeemed his ticket")
 async def verify_redemption(data: Auth[VerifyRequest]) -> Auth[VerifyResponse]:
     return API.verify_redemption(data)
+
+

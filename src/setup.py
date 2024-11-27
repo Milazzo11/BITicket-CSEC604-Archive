@@ -6,13 +6,16 @@ import os
 import pickle
 import json
 import base64
+
+import sqlite3
+
 from app.crypto.asymmetric import AKE
 from app.crypto.symmetric import SKE
 from app.util import display
 from dateutil import parser
 
 from config import (
-    PRIV_KEY_FILE, PUB_KEY_FILE
+    PRIV_KEY_FILE, PUB_KEY_FILE, DB_FILE
 )
 
 
@@ -58,9 +61,51 @@ def key_setup() -> None:
 
 def db_setup() -> None:
     """
+    Set up the database schema for storing events and their data.
     """
-    ### TODO
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # Create events table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS events (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT,
+            tickets INTEGER NOT NULL,
+            issued INTEGER NOT NULL,
+            start REAL NOT NULL,
+            end REAL NOT NULL,
+            exchanges INTEGER NOT NULL,
+            private INTEGER NOT NULL
+        )
+        """)
+        
+        # Create event_data table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS event_data (
+            event_id TEXT PRIMARY KEY,
+            event_key BLOB NOT NULL,
+            owner_public_key TEXT NOT NULL,
+            returned BLOB,
+            redeemed_bitstring BLOB NOT NULL,
+            cancel_bitstring BLOB NOT NULL,
+            FOREIGN KEY (event_id) REFERENCES events (id)
+        )
+        """)
+        
+        conn.commit()
+        conn.close()
 
+        display.clear()
+        print("SUCCESS: Database setup completed")
+
+    except Exception as e:
+        display.clear()
+        print(f"ERROR: Database setup failed --\n{e}")
+
+    input()
 
 
 def main() -> None:
@@ -100,7 +145,7 @@ def main() -> None:
                 # exit application
             
             case _:
-                print("Error: Invalid input")
+                print("ERROR: Invalid input")
                 input()
                 # bad input
 

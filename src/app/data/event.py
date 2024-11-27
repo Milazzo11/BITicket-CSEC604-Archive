@@ -63,7 +63,7 @@ class Event(BaseModel):
     exchanges: int = Field(DEFAULT_EXCHANGES, description="Maximum amount of user exchanges allowed for event tickets")
     private: bool = Field(False, description="Specifies whether event is public (open) or private (requires authorization)")
     # TODO - set contstriants on these values
-
+    ## also: the select * always loading style into event doesn't seem sustainable
 
 
 
@@ -117,7 +117,7 @@ class Event(BaseModel):
         
         self.issued += 1
 
-        return self.issued
+        return self.issued - 1
 
 
 

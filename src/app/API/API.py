@@ -63,3 +63,11 @@ def verify_redemption(data: Auth[VerifyRequest]) -> Auth[VerifyResponse]:
     response = VerifyResponse.generate(request, data.public_key)
 
     return Auth[VerifyResponse].load(response)
+
+
+
+
+
+def cleanup():
+    """
+    """
