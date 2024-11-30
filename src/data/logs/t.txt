@@ -1,7 +1,0 @@
-return log file format:
-
-[id bitstring]
-[exchange bits]
-
-MAX: SIZE * (1 + exchange_bits)
-^^ this one
