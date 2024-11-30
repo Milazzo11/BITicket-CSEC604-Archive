@@ -3,6 +3,8 @@
 
 import time
 from fastapi import HTTPException
+from fastapi.encoders import jsonable_encoder
+
 from app.data.event import Event
 from app.util import keys
 from typing import List, Union, Generic, TypeVar, Optional
@@ -17,17 +19,13 @@ from config import TIMESTAMP_ERROR, STATE_CLEANUP_INTERVAL
 ### encrypted ticktu must encrypt some punlic key data to validate owner
 
 
-
 ##### events probably should use an actual SQL DB
 
 ### managing bits in SQL seems easy too...
 
 
-
-
 ### REQUEST OBJECTS HANDLE PARSING LOGIC; RESPONSE HANDLE ACCESSING INTERNAL SERVER OPS
 # <- move all this to __init__?
-
 
 
 ### TODO - tickets DO NOT NEED TO BE SEND ENCRYPTED -- BECAUSE THEY WILL ENCRYPT A PUBKEY
@@ -50,68 +48,52 @@ from threading import Lock
 T = TypeVar("T")
 
 
-
-
 id_store = {}
 store_lock = Lock()  # To handle concurrency
 
 next_cleanup = time.time() + STATE_CLEANUP_INTERVAL
 
 
-
-
 class Data(BaseModel, Generic[T]):
-    id: str = Field(..., description="Unique data transaction ID")###default_factory makes docs say this isn't required
+    id: str = Field(
+        ..., description="Unique data transaction ID"
+    )  ###default_factory makes docs say this isn't required
     timestamp: float = Field(..., description="Epoch timestamp at send time")
     content: T = Field(..., description="Data contents")
-    
 
     ### keep ID until message timestamp expire to prevent any form of replay attack
 
     @classmethod
     def load(self, content: T) -> "Data":
-        """
-        """
+        """ """
 
-        return self(
-            id=str(uuid.uuid4()), timestamp=time.time(),
-            content=content
-        )
+        return self(id=str(uuid.uuid4()), timestamp=time.time(), content=content)
 
 
 class Auth(BaseModel, Generic[T]):
     data: Data[T] = Field(..., description="Authenticated data")
     public_key: str = Field(..., description="Public key (to verify signature)")
-    signature: str = Field(..., description="Digital signature (JWT of the internal JSON data block)")
-
+    signature: str = Field(
+        ..., description="Digital signature (JWT of the internal JSON data block)"
+    )
 
     @classmethod
     def load(self, data: Data[T]) -> "Auth":
-        """
-        """
+        """ """
 
-        data_json = self.data.model_dump_json()
+        data_json = jsonable_encoder(self.data)
         cipher = AKE(private_key=keys.priv())
 
-        return self(
-            data=data, pubkey=keys.pub(),
-            signature=cipher.sign(data_json)
-        )
-    
-
+        return self(data=data, pubkey=keys.pub(), signature=cipher.sign(data_json))
 
     def unwrap(self) -> T:
         return self.data.content
-    
-
 
     def authenticate(self, challenge_verif: callable = lambda _: None) -> T:
-        """
-        """
+        """ """
 
         global next_cleanup
-
-        data_json = self.data.model_dump_json()
+        data_json = jsonable_encoder(self.data)
         cipher = AKE(public_key=self.public_key)
 
         ### TODO - (done)
@@ -119,17 +101,17 @@ class Auth(BaseModel, Generic[T]):
         ### call "challenge_verif" to confirm completion of additional complexity challenge (not to be implemented in this version)
 
         now = time.time()
-
         if abs(now - self.data.timestamp) > TIMESTAMP_ERROR:
             raise HTTPException(status_code=401, detail="Timestamp sync failure")
 
         with store_lock:
             if self.data.id in id_store:
-                raise HTTPException(status_code=400, detail="Duplicate request ID detected.")
-            
+                raise HTTPException(
+                    status_code=400, detail="Duplicate request ID detected."
+                )
+
             id_store[self.data.id] = now
 
-        
         if next_cleanup <= now:
             with store_lock:
                 for key, value in id_store.items():
@@ -138,44 +120,8 @@ class Auth(BaseModel, Generic[T]):
 
             next_cleanup = now + STATE_CLEANUP_INTERVAL
 
-
         challenge_verif(self.data)
-        
 
         if not cipher.verify(self.signature, data_json):
             raise HTTPException(status_code=401, detail="Authentication failed")
-        
-        
-        
         return self.data.content
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
