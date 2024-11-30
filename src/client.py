@@ -2,6 +2,7 @@ import uuid
 import jwt
 import requests
 from datetime import datetime
+import time
 
 
 class EventAPI:
@@ -42,7 +43,7 @@ class EventAPI:
         """
         data = {
             "id": str(uuid.uuid4()),
-            "timestamp": int(datetime.utcnow().timestamp()),
+            "timestamp": float(time.time()),
             "content": {"text": text, "limit": limit, "mode": mode},
         }
         signature = self._generate_jwt(data)
@@ -58,7 +59,7 @@ class EventAPI:
         """
         data = {
             "id": str(uuid.uuid4()),
-            "timestamp": int(datetime.utcnow().timestamp()),
+            "timestamp": float(time.time()),
             "content": {"event_id": event_id, "verification": {}},
         }
         signature = self._generate_jwt(data)
@@ -88,7 +89,7 @@ class EventAPI:
         """
         data = {
             "id": str(uuid.uuid4()),
-            "timestamp": int(datetime.utcnow().timestamp()),
+            "timestamp": float(time.time()),
             "content": {
                 "event": {
                     "id": event_id,
@@ -116,7 +117,7 @@ class EventAPI:
         """
         data = {
             "id": str(uuid.uuid4()),
-            "timestamp": int(datetime.utcnow().timestamp()),
+            "timestamp": float(time.time()),
             "content": {"event_id": event_id, "ticket": ticket},
         }
         signature = self._generate_jwt(data)
@@ -128,18 +129,10 @@ class EventAPI:
 if __name__ == "__main__":
     # Initialize the API client
     api_client = EventAPI(
-        private_key_path="../data/priv.key",
-        public_key_path="../data/pub.key",
+        private_key_path="data/priv.key",
+        public_key_path="data/pub.key",
         base_url="http://localhost:8000",
     )
-
-    # Search event
-    search_response = api_client.search_event(text="event123", limit=1, mode="id")
-    print("Search Response:", search_response.status_code, search_response.json())
-
-    # Register user
-    register_response = api_client.register_user(event_id="event123", content="user123")
-    print("Register Response:", register_response.status_code, register_response.json())
 
     # Create event
     create_response = api_client.create_event(
@@ -147,14 +140,22 @@ if __name__ == "__main__":
         event_name="Cybersecurity Conference",
         event_description="Annual cybersecurity conference.",
         tickets=500,
-        start=int(datetime(2024, 12, 1, 9, 0).timestamp()),
-        end=int(datetime(2024, 12, 1, 17, 0).timestamp()),
+        start=int(datetime(2025, 12, 1, 9, 0).timestamp()),
+        end=int(datetime(2025, 12, 1, 17, 0).timestamp()),
         private=False,
     )
     print("Create Event Response:", create_response.status_code, create_response.json())
 
-    # Cancel ticket
-    cancel_response = api_client.cancel_ticket(event_id="event123", ticket="ticket456")
-    print(
-        "Cancel Ticket Response:", cancel_response.status_code, cancel_response.json()
-    )
+    # # Search event
+    # search_response = api_client.search_event(text="event123", limit=1, mode="id")
+    # print("Search Response:", search_response.status_code, search_response.json())
+
+    # # Register user
+    # register_response = api_client.register_user(event_id="event123", content="user123")
+    # print("Register Response:", register_response.status_code, register_response.json())
+
+    # # Cancel ticket
+    # cancel_response = api_client.cancel_ticket(event_id="event123", ticket="ticket456")
+    # print(
+    #     "Cancel Ticket Response:", cancel_response.status_code, cancel_response.json()
+    # )
