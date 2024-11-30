@@ -27,7 +27,7 @@ class RSA:
     """
 
     def __init__(
-        self, key_size: int = KEY_SIZE, private_key: Union[bytes, None] = None,
+        self, key_size: int = KEY_SIZE, private_key: Union[bytes, str, None] = None,
         public_key: Union[bytes, str, None] = None
     ) -> None:
         """
@@ -49,14 +49,18 @@ class RSA:
             self.private_key, self.public_key = self._generate_key_pair(self.key_size)
             # generate new key pair
 
-        elif type(public_key) == str:
-            public_key = public_key.encode("utf-8")
-            # convert public key string to bytes
-
         else:
             self.private_key = private_key
             self.public_key = public_key
             # set passed keys
+
+            if type(self.private_key) == str:
+                self.private_key = self.private_key.encode("utf-8")
+                # convert public key string to bytes
+
+            if type(self.public_key) == str:
+                self.public_key = self.public_key.encode("utf-8")
+                # convert public key string to bytes
         
         if self.private_key is not None:
             self._private_key = serialization.load_pem_private_key(
