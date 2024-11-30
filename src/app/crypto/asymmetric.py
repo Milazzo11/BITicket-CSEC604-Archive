@@ -28,7 +28,7 @@ class RSA:
 
     def __init__(
         self, key_size: int = KEY_SIZE, private_key: Union[bytes, None] = None,
-        public_key: Union[bytes, None] = None
+        public_key: Union[bytes, str, None] = None
     ) -> None:
         """
         RSA encryption object initialization.
@@ -48,6 +48,10 @@ class RSA:
         if private_key is None and public_key is None:
             self.private_key, self.public_key = self._generate_key_pair(self.key_size)
             # generate new key pair
+
+        elif type(public_key) == str:
+            public_key = public_key.encode("utf-8")
+            # convert public key string to bytes
 
         else:
             self.private_key = private_key
