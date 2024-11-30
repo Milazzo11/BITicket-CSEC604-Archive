@@ -124,6 +124,7 @@ class Ticket(BaseModel):
         ticket_string = cipher.iv_b64() + "-" + encrypted_string
 
         return ticket_string
+        ## TODO - in future versions (prob not proof of concept) add ticket cancelation number in ticket string
 
 
 
@@ -131,9 +132,3 @@ class Ticket(BaseModel):
 
 
 ### thought -- ticket stuff seems logical to use OOP (since everything ticket related can just be handled in here)
-
-
-
-
-### TODO - does this rly deserve to be its own file? -- it's basically just event.searching then getting ticket
-### ## 6 yes, keep it -- and then have a separate data module

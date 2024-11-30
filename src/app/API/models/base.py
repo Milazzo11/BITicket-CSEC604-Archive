@@ -3,7 +3,6 @@
 
 import time
 from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
 
 from app.data.event import Event
 from app.util import keys
@@ -68,6 +67,10 @@ class Data(BaseModel, Generic[T]):
         """ """
 
         return self(id=str(uuid.uuid4()), timestamp=time.time(), content=content)
+    
+
+    def to_dict(self) -> dict:
+        return self.__dict__
 
 
 class Auth(BaseModel, Generic[T]):
@@ -81,10 +84,12 @@ class Auth(BaseModel, Generic[T]):
     def load(self, data: Data[T]) -> "Auth":
         """ """
 
-        data_json = jsonable_encoder(self.data)
         cipher = AKE(private_key=keys.priv())
 
-        return self(data=data, pubkey=keys.pub(), signature=cipher.sign(data_json))
+        return self(
+            data=data, pubkey=keys.pub(),
+            signature=cipher.sign(self.data.to_dict())
+        )
 
     def unwrap(self) -> T:
         return self.data.content
@@ -93,7 +98,6 @@ class Auth(BaseModel, Generic[T]):
         """ """
 
         global next_cleanup
-        data_json = jsonable_encoder(self.data)
         cipher = AKE(public_key=self.public_key)
 
         ### TODO - (done)
@@ -122,6 +126,6 @@ class Auth(BaseModel, Generic[T]):
 
         challenge_verif(self.data)
 
-        if not cipher.verify(self.signature, data_json):
+        if not cipher.verify(self.signature, self.data.to_dict()):
             raise HTTPException(status_code=401, detail="Authentication failed")
         return self.data.content

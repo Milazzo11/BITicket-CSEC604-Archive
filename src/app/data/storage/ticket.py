@@ -80,6 +80,11 @@ def cancel(event_id: str, ticket_number: int) -> bool:
 
     cancel_bitstring[ticket_number] += 1
 
+    #### TODO - ACTUALLY ADD A CHECK TO PREVENT REUSE
+    ## probably unecessary to do this for initial proof of concept
+    ## but, very necessary to add to ticket string and check against
+    ## this in the future
+
     # Update the database with the new cancel bitstring
     cursor.execute("""
         UPDATE event_data
@@ -134,6 +139,8 @@ def redeem(event_id: str, ticket_number: int) -> bool:
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
+    ## TODO - check not cancelled
+
     # Fetch the redemption bitstring for the event
     cursor.execute("""
         SELECT redeemed_bitstring FROM event_data
@@ -171,6 +178,8 @@ def verify(event_id: str, ticket_number: int) -> bool:
 
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
+
+    ## TODO - check not cancelled
 
     # Fetch the redemption bitstring for the event
     cursor.execute("""

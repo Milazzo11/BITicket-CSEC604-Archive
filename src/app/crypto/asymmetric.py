@@ -229,9 +229,14 @@ class RSA:
 
         if type(message) == dict:
             try:
-                jwt.decode(signature, self.public_key, algorithms=["RS256"], options={"verify_exp": True})
-                return True
-                # verify JWT
+                decoded_message = jwt.decode(signature, self.public_key, algorithms=["RS256"])
+                
+                if decoded_message == message:
+                    return True
+                    # verify JWT
+
+                else:
+                    return False
 
             except:
                 return False
