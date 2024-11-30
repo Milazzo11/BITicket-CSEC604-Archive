@@ -236,9 +236,12 @@ class RSA:
                     # verify JWT
 
                 else:
+                    print(decoded_message)
+                    print(message)
                     return False
 
-            except:
+            except Exception as e:
+                print(e)
                 return False
                 # JWT failure
 

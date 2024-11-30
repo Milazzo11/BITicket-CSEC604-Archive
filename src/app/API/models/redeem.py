@@ -11,6 +11,9 @@ class RedeemRequest(BaseModel):
     event_id: str = Field(..., description="ID of the event for which the ticket is being redeemed")
     ticket: str = Field(..., description="Ticket being redeemed")
 
+    def to_dict(self) -> dict:
+        return self.__dict__
+
 
 
 class RedeemResponse(BaseModel):
@@ -23,3 +26,9 @@ class RedeemResponse(BaseModel):
 
         ticket = Ticket.load(request.event_id, public_key, request.ticket)
         ticket.redeem()
+
+        return self(success=True)
+    
+    
+    def to_dict(self) -> dict:
+        return self.__dict__

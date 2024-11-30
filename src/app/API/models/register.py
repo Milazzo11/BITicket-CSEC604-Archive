@@ -11,6 +11,9 @@ class RegisterRequest(BaseModel):
     event_id: str = Field(..., description="ID of event to register for")
     verification: Optional[Auth[str]] = Field(None, description="Verification for non-public/paid events (user public key signed by event owner)")
 
+    def to_dict(self) -> dict:
+        return "TODO"
+
 
 class RegisterResponse(BaseModel):
     ticket: str = Field(..., description="Ticket string of registered user")
@@ -22,20 +25,20 @@ class RegisterResponse(BaseModel):
 
         event_data = EventData.load(request.event_id)
 
-        if not event_data.event.private:
-            ticket = Ticket.register(request.event_id, public_key)
-            self.ticket = ticket.pack()
+        if event_data.event.private:
+            if request.verification is None:
+                raise HTTPException(status_code=400, detail="No authorization")
+            
+            if request.verification.public_key != event_data.data.owner_public_key:
+                raise HTTPException(status_code=400, detail="Authorization key incorrect")
 
-        elif request.verification is None:
-            raise HTTPException(status_code=401, detail="No authorization")
-        
-        elif request.verification.public_key != event_data.data.owner_public_key:
-            raise HTTPException(status_code=401, detail="Authorization key incorrect")
-
-        else:
             request.verification.authenticate()
             
-            ticket = Ticket.register(request.event_id, public_key)
-            self.ticket = ticket.pack()
+        ticket = Ticket.register(request.event_id, public_key)
+        ticket = ticket.pack()
 
-            
+        return self(ticket=ticket)
+
+    
+    def to_dict(self) -> dict:
+        return self.__dict__

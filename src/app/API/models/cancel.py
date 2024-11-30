@@ -10,6 +10,9 @@ class CancelRequest(BaseModel):
     event_id: str = Field(..., description="ID of the event for which the ticket is being returned")
     ticket: str = Field(..., description="Ticket being returned")
 
+    def to_dict(self) -> dict:
+        return self.__dict__
+
 
 class CancelResponse(BaseModel):
     success: bool = Field(True, description="Ticket cancellation status")
@@ -21,3 +24,8 @@ class CancelResponse(BaseModel):
 
         ticket = Ticket.load(request.event_id, public_key, request.ticket)
         ticket.cancel()
+
+        return self(success=True)
+    
+    def to_dict(self) -> dict:
+        return self.__dict__

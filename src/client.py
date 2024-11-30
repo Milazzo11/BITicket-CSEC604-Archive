@@ -68,7 +68,7 @@ class EventAPI:
 
     def create_event(
         self,
-        event_id: str,
+        #event_id: str,
         event_name: str,
         event_description: str,
         tickets: int,
@@ -92,7 +92,7 @@ class EventAPI:
             "timestamp": float(time.time()),
             "content": {
                 "event": {
-                    "id": event_id,
+                    "id": str(uuid.uuid4()),
                     "name": event_name,
                     "description": event_description,
                     "tickets": tickets,
@@ -136,7 +136,7 @@ if __name__ == "__main__":
 
     # Create event
     create_response = api_client.create_event(
-        event_id="event123",
+        #event_id=str(uuid.uuid4()),
         event_name="Cybersecurity Conference",
         event_description="Annual cybersecurity conference.",
         tickets=500,

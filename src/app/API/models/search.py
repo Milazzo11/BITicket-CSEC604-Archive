@@ -22,6 +22,9 @@ class SearchRequest(BaseModel):
     limit: int = Field(1, description="The maximum number of results to return")
     mode: Mode = Field(Mode.ID, description='Search mode: "id" or "text"')
 
+    def to_dict(self) -> dict:
+        return self.__dict__
+
 
 
 
@@ -35,7 +38,15 @@ class SearchResponse(BaseModel):
         """
 
         if request.mode == Mode.ID:
-            self.events = [Event.load(request.text)]
+            events = [Event.load(request.text)]
 
         else:
-            self.events = event.search(request.text, request.limit)
+            events = event.search(request.text, request.limit)
+
+        return self(events=events)
+    
+
+    def to_dict(self) -> dict:
+        return {
+            "events": [event.to_dict() for event in self.events]
+        }

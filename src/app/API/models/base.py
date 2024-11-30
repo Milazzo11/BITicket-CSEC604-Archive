@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 from app.data.event import Event
 from app.util import keys
-from typing import List, Union, Generic, TypeVar, Optional
+from typing import List, Union, Generic, TypeVar, Optional, Protocol
 from pydantic import BaseModel, Field
 
 import uuid
@@ -44,13 +44,21 @@ from config import TIMESTAMP_ERROR, STATE_CLEANUP_INTERVAL
 
 from threading import Lock
 
+
+
+
+
 T = TypeVar("T")
+
 
 
 id_store = {}
 store_lock = Lock()  # To handle concurrency
 
 next_cleanup = time.time() + STATE_CLEANUP_INTERVAL
+
+
+
 
 
 class Data(BaseModel, Generic[T]):
@@ -64,13 +72,21 @@ class Data(BaseModel, Generic[T]):
 
     @classmethod
     def load(self, content: T) -> "Data":
-        """ """
+        """
+        """
 
         return self(id=str(uuid.uuid4()), timestamp=time.time(), content=content)
     
 
     def to_dict(self) -> dict:
-        return self.__dict__
+
+        return {
+            "id": self.id,
+            "timestamp": self.timestamp,
+            "content": self.content.to_dict()###<<-- TODO, somehow add interface functionality
+        }
+    
+    ## ALSO TODO -- rn, it is required that users send everything for verification... but we don't want that
 
 
 class Auth(BaseModel, Generic[T]):
@@ -82,20 +98,24 @@ class Auth(BaseModel, Generic[T]):
 
     @classmethod
     def load(self, data: Data[T]) -> "Auth":
-        """ """
+        """
+        """
 
         cipher = AKE(private_key=keys.priv())
 
         return self(
-            data=data, pubkey=keys.pub(),
-            signature=cipher.sign(self.data.to_dict())
+            data=data, public_key=keys.pub(),
+            signature=cipher.sign(data.to_dict())
         )
+
 
     def unwrap(self) -> T:
         return self.data.content
 
+
     def authenticate(self, challenge_verif: callable = lambda _: None) -> T:
-        """ """
+        """
+        """
 
         global next_cleanup
         cipher = AKE(public_key=self.public_key)
@@ -127,5 +147,12 @@ class Auth(BaseModel, Generic[T]):
         challenge_verif(self.data)
 
         if not cipher.verify(self.signature, self.data.to_dict()):
-            raise HTTPException(status_code=401, detail="Authentication failed")
+            raise HTTPException(status_code=400, detail="Authentication failed")
+        
         return self.data.content
+
+
+    def to_dict(self) -> dict:
+        """
+        TODO
+        """

@@ -11,6 +11,9 @@ class VerifyRequest(BaseModel):
     ticket: str = Field(..., description="Ticket string of user to check")
     check_public_key: str = Field(..., description="Public key of the user being checked for ticket redemption")
 
+    def to_dict(self) -> dict:
+        return self.__dict__
+
 
 
 class VerifyResponse(BaseModel):
@@ -23,3 +26,9 @@ class VerifyResponse(BaseModel):
 
         ticket = Ticket.load(request.event_id, public_key, request.ticket)
         ticket.verify()
+
+        return self(success=True)
+    
+
+    def to_dict(self) -> dict:
+        return self.__dict__

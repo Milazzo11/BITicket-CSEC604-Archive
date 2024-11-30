@@ -19,6 +19,10 @@ class TransferRequest(BaseModel):
     transfer: Auth[Transfer] = Field(..., description="Transfer authorization JSON (signed by current ticket owner)")
 
 
+    def to_dict(self) -> dict:
+        return "TODO"
+
+
 class TransferResponse(BaseModel):
     ticket: str = Field(..., description="New ticket string transferred to user")
 
@@ -38,4 +42,10 @@ class TransferResponse(BaseModel):
         new_ticket = Ticket.register(
             request.event_id, public_key, number=old_ticket.number
         )
-        self.ticket = new_ticket.pack()
+        ticket = new_ticket.pack()
+
+        return self(ticket=ticket)
+    
+
+    def to_dict(self) -> dict:
+        return self.__dict__
