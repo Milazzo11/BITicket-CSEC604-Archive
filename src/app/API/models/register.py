@@ -31,6 +31,9 @@ class RegisterResponse(BaseModel):
             
             if request.verification.public_key != event_data.data.owner_public_key:
                 raise HTTPException(status_code=400, detail="Authorization key incorrect")
+            
+            if request.verification.unwrap() != public_key:
+                raise HTTPException(status_code=400, detail="Authorization for incorrect key")
 
             request.verification.authenticate()
             
