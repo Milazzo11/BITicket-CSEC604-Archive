@@ -48,16 +48,20 @@ class Ticket(BaseModel):
     def load(self, event_id: str, public_key: str, ticket: str) -> "Ticket":
         """
         """
+        ### TODO - prob add better error handling for failures... especially since CBC doesnt do integrity
 
         event_data = EventData.load(event_id)
 
         b64_iv, ticket = ticket.split("-")
-        data = self.event_data.data
+        data = event_data.data
 
         cipher = SKE(key=data.event_key, iv=base64.b64decode(b64_iv))
 
         decrypted_ticket_raw = cipher.decrypt(ticket)
-        decrypted_ticket, ticket_hash = decrypted_ticket_raw.split(" ")
+
+        print(decrypted_ticket_raw)
+        print(decrypted_ticket_raw.split("#"))
+        decrypted_ticket, ticket_hash = decrypted_ticket_raw.split("#")
         
         if hash.generate(decrypted_ticket) != ticket_hash:
             raise HTTPException(status_code=400, detail="Ticket hash cannot be verified")
@@ -120,7 +124,7 @@ class Ticket(BaseModel):
         ticket_string_raw = self.event_id + "\\" + self.public_key + "\\" + str(self.number)
         ticket_string_hash = hash.generate(ticket_string_raw)
 
-        encrypted_string = cipher.encrypt(ticket_string_raw + " " + ticket_string_hash)
+        encrypted_string = cipher.encrypt(ticket_string_raw + "#" + ticket_string_hash)
         ticket_string = cipher.iv_b64() + "-" + encrypted_string
 
         return ticket_string
