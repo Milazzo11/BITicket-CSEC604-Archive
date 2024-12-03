@@ -135,13 +135,17 @@ class Auth(BaseModel, Generic[T]):
                 )
 
             id_store[self.data.id] = now
+            to_delete = []
 
             if next_cleanup <= now:
                 for key, value in id_store.items():
                     if abs(now - value) > TIMESTAMP_ERROR:
-                        del id_store[key]
+                        to_delete.append(key)
+                        
+                for key in to_delete:
+                    del id_store[key]
 
-            next_cleanup = now + STATE_CLEANUP_INTERVAL
+                next_cleanup = now + STATE_CLEANUP_INTERVAL
 
         challenge_verif(self.data)
 
