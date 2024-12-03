@@ -75,6 +75,7 @@ class RSA:
             )
             # initialize public key object for encryption
 
+
     def _generate_key_pair(self, key_size: int) -> tuple:
         """
         Generate RSA key pair.
@@ -86,24 +87,25 @@ class RSA:
         private_key = rsa.generate_private_key(
             public_exponent=PUBLIC_EXPONENT,
             key_size=key_size,
-            backend=default_backend(),
+            backend=default_backend()
         )
         # generate new private key
 
         private_key_bytes = private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.NoEncryption(),
+            encryption_algorithm=serialization.NoEncryption()
         )
         # encode and format private key bytes
 
         public_key_bytes = private_key.public_key().public_bytes(
             encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
         )
         # generate associated public key bytes
 
         return private_key_bytes, public_key_bytes
+
 
     def encrypt(
         self, plaintext: Union[bytes, str], byte_output: bool = False
@@ -127,8 +129,8 @@ class RSA:
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
-                label=None,
-            ),
+                label=None
+            )
         )
         # encrypt data
 
@@ -137,6 +139,7 @@ class RSA:
             # encode ciphertext as a base64 string
 
         return ciphertext
+
 
     def decrypt(
         self, ciphertext: Union[bytes, str], byte_output: bool = True
@@ -160,8 +163,8 @@ class RSA:
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
-                label=None,
-            ),
+                label=None
+            )
         )
         # decrypt data
 
@@ -170,6 +173,7 @@ class RSA:
             # decode plaintext as a UTF-8 string
 
         return plaintext
+
 
     def sign(
         self, message: Union[dict, bytes, str], byte_output: bool = False
@@ -197,7 +201,7 @@ class RSA:
             padding.PSS(
                 mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
             ),
-            hashes.SHA256(),
+            hashes.SHA256()
         )
         # sign the message using RSA and SHA-256
 
@@ -206,6 +210,7 @@ class RSA:
             # decode plaintext as a UTF-8 string
 
         return signature
+
 
     def _is_dict_subset(self, subdict: dict, superdict: dict) -> bool:
         for key, sub_value in subdict.items():
@@ -226,6 +231,7 @@ class RSA:
                 return False
 
         return True
+
 
     def verify(
         self, signature: Union[bytes, str], message: Union[dict, bytes, str]
@@ -272,7 +278,7 @@ class RSA:
                     mgf=padding.MGF1(hashes.SHA256()),
                     salt_length=padding.PSS.MAX_LENGTH,
                 ),
-                hashes.SHA256(),
+                hashes.SHA256()
             )
             # verify the signature
 
