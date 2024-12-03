@@ -12,6 +12,7 @@ app = FastAPI()
 
 @app.post("/search", description="Search for events")
 async def search_events(data: Auth[SearchRequest]) -> Auth[SearchResponse]:
+    print("hello")
     return API.search_events(data)
 
 

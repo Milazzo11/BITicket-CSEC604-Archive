@@ -31,15 +31,12 @@ class SearchResponse(BaseModel):
         """
         """
 
-        print("ss")
-
         if request.mode.lower() == "id":
             events = [Event.load(request.text)]
 
         else:
             events = event.search(request.text, request.limit)
 
-        print("fs")
         return self(events=events)
     
 
