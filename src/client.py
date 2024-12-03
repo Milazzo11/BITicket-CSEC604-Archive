@@ -153,6 +153,29 @@ class EventAPI:
         payload = {"data": data, "public_key": self.public_key, "signature": signature}
         return self._post_request("redeem", payload)
 
+    def verify(
+        self, event_id: str, ticket: str, check_public_key: str
+    ) -> requests.Response:
+        """
+        Verifies a ticket by making a request to the /verify endpoint.
+        :param event_id: ID of the event associated with the ticket.
+        :param ticket: Ticket ID or identifier to verify.
+        :param check_public_key: Public key to check against.
+        :return: Response from the /verify endpoint.
+        """
+        data = {
+            "id": str(uuid.uuid4()),
+            "timestamp": float(time.time()),
+            "content": {
+                "event_id": event_id,
+                "ticket": ticket,
+                "check_public_key": check_public_key,
+            },
+        }
+        signature = self._generate_jwt(data)
+        payload = {"data": data, "public_key": self.public_key, "signature": signature}
+        return self._post_request("verify", payload)
+
 
 # Example usage
 if __name__ == "__main__":
@@ -199,5 +222,7 @@ if __name__ == "__main__":
     event_id = "794b0be3-53ad-455c-b9ea-2c7e61bc2188"  # Replace with your event ID
     # ticket = "3JHN1KA6f2GqC4u2X8F/9w==..."  # Replace with your ticket string
     redeem_response = api_client.redeem_ticket(event_id=event_id, ticket=ticket)
-    #print("redeem response", redeem_response)
-    print("Redeem Ticket Response:", redeem_response.status_code, redeem_response.json())
+    print("redeem response", redeem_response)
+    print(
+        "Redeem Ticket Response:", redeem_response.status_code, redeem_response.json()
+    )
