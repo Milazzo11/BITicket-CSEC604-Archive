@@ -33,12 +33,25 @@ class EventAPI:
         url = f"{self.base_url}/{endpoint}"
         return requests.post(url, json=payload)
 
+    def _get_request(
+        self, endpoint: str, params: dict, headers: dict = None
+    ) -> requests.Response:
+        """
+        Sends a GET request to the specified endpoint with the given parameters and headers.
+        :param endpoint: API endpoint (e.g., 'search').
+        :param params: Dictionary of query parameters to include in the request.
+        :param headers: Optional dictionary of HTTP headers.
+        :return: Response from the server.
+        """
+        url = f"{self.base_url}/{endpoint}"
+        return requests.get(url, params=params, headers=headers)
+
     def search_event(self, text: str, limit: int, mode: str) -> requests.Response:
         """
         Sends a search request with a signed JWT.
         :param text: Text to search for.
         :param limit: Number of results to return.
-        :param mode: Search mode (e.g., 'id', 'name').
+        :param mode: Search mode (e.g., 'id', 'text').
         :return: Response from the server.
         """
         data = {
@@ -68,7 +81,7 @@ class EventAPI:
 
     def create_event(
         self,
-        #event_id: str,
+        event_id: str,
         event_name: str,
         event_description: str,
         tickets: int,
@@ -134,32 +147,21 @@ if __name__ == "__main__":
         base_url="http://localhost:8000",
     )
 
-    # Create event
-    
-    """
-    create_response = api_client.create_event(
-        #event_id=str(uuid.uuid4()),
-        event_name="Cybersecurity Conference",
-        event_description="Annual cybersecurity conference.",
-        tickets=500,
-        start=int(datetime(2025, 12, 1, 9, 0).timestamp()),
-        end=int(datetime(2025, 12, 1, 17, 0).timestamp()),
-        private=False,
-    )
-    print("Create Event Response:", create_response.status_code, create_response.json())
-    """
+    # # Create event
+    # create_response = api_client.create_event(
+    #     #event_id=str(uuid.uuid4()),
+    #     event_name="Cybersecurity Conference",
+    #     event_description="Annual cybersecurity conference.",
+    #     tickets=500,
+    #     start=int(datetime(2025, 12, 1, 9, 0).timestamp()),
+    #     end=int(datetime(2025, 12, 1, 17, 0).timestamp()),
+    #     private=False,
+    # )
+    # print("Create Event Response:", create_response.status_code, create_response.json())
 
-    #sr = api_client.search_event("794b0be3-53ad-455c-b9ea-2c7e61bc2188", 1, "id")
-    #print("Create Event Response ID:", sr.status_code, sr.json())
-
-    #time.sleep(1)
-
-    sr = api_client.search_event("cyber", 1, "text")
-    print("Create Event Response TEXT:", sr.status_code, sr.json())
-
-    # # Search event
-    # search_response = api_client.search_event(text="event123", limit=1, mode="id")
-    # print("Search Response:", search_response.status_code, search_response.json())
+    # Search event
+    search_response = api_client.search_event(text="event123", limit=1, mode="id")
+    print("Search Response:", search_response.status_code, search_response.json())
 
     """
     event_id = "794b0be3-53ad-455c-b9ea-2c7e61bc2188"
