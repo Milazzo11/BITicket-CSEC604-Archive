@@ -135,7 +135,7 @@ if __name__ == "__main__":
     )
 
     # Create event
-    """
+    
     create_response = api_client.create_event(
         #event_id=str(uuid.uuid4()),
         event_name="Cybersecurity Conference",
@@ -146,7 +146,7 @@ if __name__ == "__main__":
         private=False,
     )
     print("Create Event Response:", create_response.status_code, create_response.json())
-    """
+    
 
     # # Search event
     # search_response = api_client.search_event(text="event123", limit=1, mode="id")

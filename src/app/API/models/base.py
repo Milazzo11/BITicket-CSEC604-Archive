@@ -136,13 +136,13 @@ class Auth(BaseModel, Generic[T]):
 
             id_store[self.data.id] = now
 
-        if next_cleanup <= now:
-            with store_lock:
-                for key, value in id_store.items():
-                    if abs(now - value) > TIMESTAMP_ERROR:
-                        del id_store[key]
+            if next_cleanup <= now:
+                with store_lock:
+                    for key, value in id_store.items():
+                        if abs(now - value) > TIMESTAMP_ERROR:
+                            del id_store[key]
 
-            next_cleanup = now + STATE_CLEANUP_INTERVAL
+                next_cleanup = now + STATE_CLEANUP_INTERVAL
 
         challenge_verif(self.data)
 
