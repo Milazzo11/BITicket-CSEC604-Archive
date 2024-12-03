@@ -137,6 +137,22 @@ class EventAPI:
         payload = {"data": data, "public_key": self.public_key, "signature": signature}
         return self._post_request("cancel", payload)
 
+    def redeem_ticket(self, event_id: str, ticket: str) -> requests.Response:
+        """
+        Sends a ticket redemption request with a signed JWT.
+        :param event_id: ID of the event associated with the ticket.
+        :param ticket: Ticket ID or identifier to redeem.
+        :return: Response from the server.
+        """
+        data = {
+            "id": str(uuid.uuid4()),
+            "timestamp": float(time.time()),
+            "content": {"event_id": event_id, "ticket": ticket},
+        }
+        signature = self._generate_jwt(data)
+        payload = {"data": data, "public_key": self.public_key, "signature": signature}
+        return self._post_request("redeem", payload)
+
 
 # Example usage
 if __name__ == "__main__":
@@ -149,7 +165,7 @@ if __name__ == "__main__":
 
     # # Create event
     # create_response = api_client.create_event(
-    #     #event_id=str(uuid.uuid4()),
+    #     event_id=str(uuid.uuid4()),
     #     event_name="Cybersecurity Conference",
     #     event_description="Annual cybersecurity conference.",
     #     tickets=500,
@@ -160,8 +176,8 @@ if __name__ == "__main__":
     # print("Create Event Response:", create_response.status_code, create_response.json())
 
     # Search event
-    search_response = api_client.search_event(text="event123", limit=1, mode="id")
-    print("Search Response:", search_response.status_code, search_response.json())
+    # search_response = api_client.search_event(text="event123", limit=1, mode="id")
+    # print("Search Response:", search_response.status_code, search_response.json())
 
     """
     event_id = "794b0be3-53ad-455c-b9ea-2c7e61bc2188"
@@ -177,3 +193,9 @@ if __name__ == "__main__":
     # )
 
     ticket = "3JHN1KA6f2GqC4u2X8F/9w==-DQ6zMVtp5wvC37Mv9b4uYMehGNx5QymArZyd7hor95r13WQXLTOLQgheg1n9iDk0wJ9CT84birKBPcwt+GDKVlXaEfTrn70CMxLqblou/WKXXPZ6nNsrqCjfZr4Fr39VxyLi0BuJuIQCDX2bHVn5Q42bVilD9GS+eTWgSy+KgcyVYrX9W5WBHVVkxxQXLrtpW+ZVrsJ7lw7GgwwNO9xb+XaztSnu69wRX9cN6JsSQd3NGQhboO4aDWHkZRnUbuiE76kZQ7XNXjqWbX8bznmSAIZk0gUV4NoIL6Yfn47xJ+naCU/DEitoUjzGPcXsSGw8dDyCIsAyGD4iJIc+LF9f0AaVWA6zJA1EKxpFMabg1LBJIvw80E4+56YgdlWW00lCZDiuq359HlTrEENJEFkR70v1UZdz9ZhIFJa6xcwppAdorvZBGBtg5P19PrkshiH4VzApdiPTljnUAxo6S3e+X3i+2eT3qPrt2iRVPu/nTpwHJSZ0wMTqtJtkh8G8usf/nh/0sPhCfif+45ZjfnQCu06lI96/MJgHE+VxBcR6ueHckppPw2s05f/fzRmFFdmm8d5rcg6QNoF5uOteXyUWR41q9css79yD8/X4m03TJDUppyqHkvgANmJmJQvCFoUznLtRkIR8aVVnZqC+8rCrRf5AAnZvDdYzV+67oIczZSv8N1g4uJevbCxDG7xd+pBXbxRGOYvp7F3J8dsaGBCTrZBwcDCzWYTmzXz42vpf8QwJUsm2HdrPIT868WxT70OEwnno0RNoOgJLzn7LoHEPway62MaLxtX5gG30CHRNl5lCJphrB4n5LKlt8MiS01+uVlEzWbjXC3GgXJfTsH/1wqCUezQDjOPbPmjzDk82NJ32/YDrBFWAjxxTWOVAhQ4zi1PWqTSeqJEYY6YpxUCHeLwlT6OrPqbsXsGic+fo9MVsbQ3dYf5uO9+YLM8wYXMQdGinLzh7spsX8SNZIc1ZSujq1BASOy8JjnpGx6OR8msmrWWDsTOp7WzmXCg1T3tuMzPmpGJGBB3yePx2o28dbngtZtXm1m1OwVfNYvGMJtyENbvwOpt/9S/mK09sa0D0IdME5VrhIEp5+c3ld/ZpvAiepwIRXmW9G7uAyxDyBK39QVsiTSar3jPC/57mHrbfEiogugqQWUQmNwXXmmgUj98AXbzLOUeIPk3kwUVcoxDXD5XQu2ps3QYEI/lxoR20"
+
+    event_id = "event123"  # Replace with your event ID
+    # ticket = "3JHN1KA6f2GqC4u2X8F/9w==..."  # Replace with your ticket string
+    redeem_response = api_client.redeem_ticket(event_id=event_id, ticket=ticket)
+    print("redeem response", redeem_response)
+    print("Redeem Ticket Response:", redeem_response.status_code, redeem_response.json())
