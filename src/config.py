@@ -23,7 +23,7 @@ DB_FILE = os.path.join("data", "events.db")
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-TIMESTAMP_ERROR = 3
+TIMESTAMP_ERROR = 10
 # timestamp error allowance (in seconds) for requests
 
 

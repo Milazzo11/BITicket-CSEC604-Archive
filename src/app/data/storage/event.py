@@ -33,9 +33,13 @@ def load(event_id: str) -> dict:###<-this funtionality will probably need to be 
     cursor.execute("SELECT * FROM events WHERE id = ?", (event_id,))
     event_row = cursor.fetchone()
 
-    conn.close()
+    print(event_row)
 
     columns = [desc[0] for desc in cursor.description]
+
+    conn.close()
+
+    
     return dict(zip(columns, event_row))
 
 
@@ -77,7 +81,7 @@ def load_full(event_id: str) -> dict:###<-this funtionality will probably need t
         "data": dict(zip(data_columns, data_row))
     }
     data["data"]["returned"] = pickle.loads(data["data"]["returned"])
-    
+
     return data
 
 
