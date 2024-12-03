@@ -213,6 +213,25 @@ class RSA:
             # decode plaintext as a UTF-8 string
             
         return signature
+    
+
+    def _is_dict_subset(self, subdict: dict, superdict: dict) -> bool:
+        for key, sub_value in subdict.items():
+            # Check if the key exists in the superdict
+            if key not in superdict:
+                return False
+            
+            super_value = superdict[key]
+            
+            # If the value is a dictionary, recurse
+            if isinstance(sub_value, dict):
+                if not isinstance(super_value, dict) or not self._is_dict_subset(sub_value, super_value):
+                    return False
+            # Otherwise, check for value equality
+            elif sub_value != super_value:
+                return False
+        
+        return True
         
         
     def verify(
@@ -230,15 +249,12 @@ class RSA:
         if type(message) == dict:
             try:
                 decoded_message = jwt.decode(signature, self.public_key, algorithms=["RS256"])
-                
-                if decoded_message == message:
-                    return True
-                    # verify JWT
 
-                else:
-                    print(decoded_message)
-                    print(message)
-                    return False
+                print(message)
+                print(decoded_message)
+                
+                return self._is_dict_subset(decoded_message, message)
+                # verify JWT
 
             except Exception as e:
                 print(e)

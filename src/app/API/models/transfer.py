@@ -20,7 +20,10 @@ class TransferRequest(BaseModel):
 
 
     def to_dict(self) -> dict:
-        return "TODO"
+        return {
+            "event_id": self.event_id,
+            "transfer": self.transfer.to_dict()
+        }
 
 
 class TransferResponse(BaseModel):

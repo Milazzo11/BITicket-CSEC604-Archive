@@ -26,13 +26,11 @@ class Data(BaseModel):
 
     @classmethod
     def from_dict(self, data: dict) -> "Data":
-        instance = self()
-
-        for key, value in data.items():
-            if hasattr(instance, key):
-                setattr(instance, key, value)
-        
-        return instance
+        return self(
+            event_key=data.get("event_key", SKE.key()),
+            owner_public_key=data["owner_public_key"],  # This must be provided
+            returned=data.get("returned", []),  # Default is an empty list
+        )
 
 
     def to_dict(self) -> dict:
@@ -69,13 +67,19 @@ class Event(BaseModel):
 
     @classmethod
     def from_dict(self, data: dict) -> "Event":
-        instance = self()
+        # Manually set default values if not provided in the dictionary
 
-        for key, value in data.items():
-            if hasattr(instance, key):
-                setattr(instance, key, value)
-        
-        return instance
+        return self(
+            id=data.get("id", str(uuid.uuid4())),
+            name=data["name"],  # This must be provided
+            description=data["description"],  # This must be provided
+            tickets=data.get("tickets", DEFAULT_EVENT_TICKETS),
+            issued=data.get("issued", 0),
+            start=data.get("start", time.time()),
+            end=data.get("end", time.time() + DEFAULT_EVENT_TTL),
+            exchanges=data.get("exchanges", DEFAULT_EXCHANGES),
+            private=data.get("private", False),
+        )
 
 
 
@@ -137,6 +141,8 @@ class EventData(BaseModel):
         """
 
         dict = event_db.load_full(event_id)
+
+        print(dict)
 
         return self(
             event=Event.from_dict(dict["event"]),

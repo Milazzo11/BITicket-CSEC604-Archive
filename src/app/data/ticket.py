@@ -75,7 +75,7 @@ class Ticket(BaseModel):
         return self(
             event_id=event_id,
             public_key=public_key,
-            number=ticket_data[2],
+            number=int(ticket_data[2]),
             event_data=event_data
         )
 
@@ -117,7 +117,7 @@ class Ticket(BaseModel):
         data = self.event_data.data
         cipher = SKE(key=data.event_key)
 
-        ticket_string_raw = self.event_id + "\\" + self.public_key + "\\" + self.number
+        ticket_string_raw = self.event_id + "\\" + self.public_key + "\\" + str(self.number)
         ticket_string_hash = hash.generate(ticket_string_raw)
 
         encrypted_string = cipher.encrypt(ticket_string_raw + " " + ticket_string_hash)

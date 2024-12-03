@@ -13,7 +13,7 @@ def register(event_id: str, ticket_number: int) -> None:
     #### ALSO if "returned list" in data contains the ticket number, remove it
 
     # Connect to the database
-    conn = sqlite3.connect('events.db')
+    conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
     # Step 1: Increment the issued count

@@ -57,6 +57,8 @@ def load_full(event_id: str) -> dict:###<-this funtionality will probably need t
     cursor.execute("SELECT * FROM events WHERE id = ?", (event_id,))
     event_row = cursor.fetchone()
 
+    event_columns = [desc[0] for desc in cursor.description]
+
     # Fetch event data
     cursor.execute("""
         SELECT event_key, owner_public_key, returned 
@@ -67,14 +69,16 @@ def load_full(event_id: str) -> dict:###<-this funtionality will probably need t
 
     conn.close()
 
-    event_columns = [desc[0] for desc in cursor.description]
+    
     data_columns = ["event_key", "owner_public_key", "returned"]
 
-    return {
+    data = {
         "event": dict(zip(event_columns, event_row)),
         "data": dict(zip(data_columns, data_row))
     }
-
+    data["data"]["returned"] = pickle.loads(data["data"]["returned"])
+    
+    return data
 
 
 def search(text: str, limit: int) -> List[dict]:##these dicts are ONLY event, no data

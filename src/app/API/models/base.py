@@ -147,12 +147,17 @@ class Auth(BaseModel, Generic[T]):
         challenge_verif(self.data)
 
         if not cipher.verify(self.signature, self.data.to_dict()):
-            raise HTTPException(status_code=400, detail="Authentication failed")
+            raise HTTPException(status_code=401, detail="Authentication failed")
         
         return self.data.content
 
 
     def to_dict(self) -> dict:
         """
-        TODO
         """
+
+        return {
+            "data": self.data.to_dict(),
+            "public_key": self.public_key,
+            "signature": self.signature
+        }

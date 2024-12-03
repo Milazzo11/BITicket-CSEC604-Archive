@@ -21,10 +21,9 @@ class CreateResponse(BaseModel):
         """
         """
 
-        event_id = request.event.create(public_key)
-        ## TODO -- event ID doesn't return
+        request.event.create(public_key)
 
-        return self(event_id=event_id)
+        return self(event_id=request.event.id)
     
 
     def to_dict(self) -> dict:

@@ -12,7 +12,16 @@ class RegisterRequest(BaseModel):
     verification: Optional[Auth[str]] = Field(None, description="Verification for non-public/paid events (user public key signed by event owner)")
 
     def to_dict(self) -> dict:
-        return "TODO"
+
+        if self.verification is None:
+            verif_value = None
+        else:
+            verif_value = self.verification.to_dict()
+
+        return {
+            "event_id": self.event_id,
+            "verification": verif_value
+        }
 
 
 class RegisterResponse(BaseModel):
@@ -27,13 +36,13 @@ class RegisterResponse(BaseModel):
 
         if event_data.event.private:
             if request.verification is None:
-                raise HTTPException(status_code=400, detail="No authorization")
+                raise HTTPException(status_code=401, detail="No authorization")
             
             if request.verification.public_key != event_data.data.owner_public_key:
-                raise HTTPException(status_code=400, detail="Authorization key incorrect")
+                raise HTTPException(status_code=401, detail="Authorization key incorrect")
             
             if request.verification.unwrap() != public_key:
-                raise HTTPException(status_code=400, detail="Authorization for incorrect key")
+                raise HTTPException(status_code=401, detail="Authorization for incorrect key")
 
             request.verification.authenticate()
             
