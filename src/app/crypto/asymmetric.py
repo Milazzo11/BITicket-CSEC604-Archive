@@ -29,7 +29,7 @@ class RSA:
         self,
         key_size: int = KEY_SIZE,
         private_key: Union[bytes, str, None] = None,
-        public_key: Union[bytes, str, None] = None,
+        public_key: Union[bytes, str, None] = None
     ) -> None:
         """
         RSA encryption object initialization.
