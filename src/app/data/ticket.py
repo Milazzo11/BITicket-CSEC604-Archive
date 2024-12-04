@@ -50,23 +50,30 @@ class Ticket(BaseModel):
         """
         ### TODO - prob add better error handling for failures... especially since CBC doesnt do integrity
 
-        event_data = EventData.load(event_id)
+        try:
+            event_data = EventData.load(event_id)
 
-        b64_iv, ticket = ticket.split("-")
-        data = event_data.data
+            b64_iv, ticket = ticket.split("-")
+            data = event_data.data
 
-        cipher = SKE(key=data.event_key, iv=base64.b64decode(b64_iv))
-
-        decrypted_ticket_raw = cipher.decrypt(ticket)
-
-        print(decrypted_ticket_raw)
-        print(decrypted_ticket_raw.split("#"))
-        decrypted_ticket, ticket_hash = decrypted_ticket_raw.split("#")
+            cipher = SKE(key=data.event_key, iv=base64.b64decode(b64_iv))
         
-        if hash.generate(decrypted_ticket) != ticket_hash:
-            raise HTTPException(status_code=400, detail="Ticket hash cannot be verified")
+            decrypted_ticket_raw = cipher.decrypt(ticket)
+        
+            print(decrypted_ticket_raw)
+            print(decrypted_ticket_raw.split("#"))
+            decrypted_ticket, ticket_hash = decrypted_ticket_raw.split("#")
+            
+            if hash.generate(decrypted_ticket) != ticket_hash:
+                raise Exception
+                # go to "except" block
 
-        ticket_data = decrypted_ticket.split("\\")
+            ticket_data = decrypted_ticket.split("\\")
+            assert len(ticket_data) == 3
+        
+        except:
+            raise HTTPException(status_code=401, detail="Ticket verification failed")
+            ## TODO - this is here and general to prevent padding oracle attack
 
         if ticket_data[0] != event_id:
             raise HTTPException(status_code=400, detail="Ticket data does not match event ID")
@@ -75,11 +82,13 @@ class Ticket(BaseModel):
         if ticket_data[1] != public_key:
             raise HTTPException(status_code=400, detail="Ticket invalid (non-matching public key)")
             # ensure ticket public key matches key of client making request
+
+        number = int(ticket_data[2])
         
         return self(
             event_id=event_id,
             public_key=public_key,
-            number=int(ticket_data[2]),
+            number=number,
             event_data=event_data
         )
 

@@ -8,11 +8,7 @@ from app.API.models import *
 
 
 def search_events(data: Auth[SearchRequest]) -> Auth[SearchResponse]:
-
-    print("h1")
     request = data.authenticate()
-
-    print("h2")
     response = SearchResponse.generate(request)
 
     data = Data[SearchResponse].load(response)

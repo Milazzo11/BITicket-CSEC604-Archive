@@ -63,7 +63,7 @@ class EventAPI:
         payload = {"data": data, "public_key": self.public_key, "signature": signature}
         return self._post_request("search", payload)
 
-    def register_user(self, event_id: str, content: str) -> requests.Response:
+    def register_user(self, event_id: str) -> requests.Response:
         """
         Sends a user registration request with a signed JWT.
         :param event_id: ID of the event the user is registering for.
@@ -181,8 +181,8 @@ class EventAPI:
 if __name__ == "__main__":
     # Initialize the API client
     api_client = EventAPI(
-        private_key_path="data/priv.key",
-        public_key_path="data/pub.key",
+        private_key_path="priv.demo.key",
+        public_key_path="pub.demo.key",
         base_url="http://localhost:8000",
     )
 

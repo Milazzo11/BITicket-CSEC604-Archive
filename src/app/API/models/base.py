@@ -54,7 +54,6 @@ T = TypeVar("T")
 
 id_store = {}
 store_lock = Lock()  # To handle concurrency
-
 next_cleanup = time.time() + STATE_CLEANUP_INTERVAL
 
 

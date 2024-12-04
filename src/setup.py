@@ -41,7 +41,7 @@ def key_setup() -> None:
     
     try:
         cipher = AKE()
-        
+
         with open(PRIV_KEY_FILE, "wb") as f:
             f.write(cipher.private_key)
             

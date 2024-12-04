@@ -58,6 +58,8 @@ class Event(BaseModel):
     issued: int = Field(0, description="Number of tickets issued")
     start: float = Field(default_factory=lambda: time.time(), description="Epoch timestamp of event start date")
     end: float = Field(default_factory=lambda: time.time() + DEFAULT_EVENT_TTL, description="Epoch timestamp of event end date")
+    ## TODO - at some point, probably place some constraints based on date, and clear out old events
+
     exchanges: int = Field(DEFAULT_EXCHANGES, description="Maximum amount of user exchanges allowed for event tickets")
     private: bool = Field(False, description="Specifies whether event is public (open) or private (requires authorization)")
     # TODO - set contstriants on these values
