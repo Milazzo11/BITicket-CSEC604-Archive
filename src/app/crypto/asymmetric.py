@@ -251,14 +251,10 @@ class RSA:
                     signature, self.public_key, algorithms=["RS256"]
                 )
 
-                print(message)
-                print(decoded_message)
-
                 return self._is_dict_subset(decoded_message, message)
                 # verify JWT
 
-            except Exception as e:
-                print("Exception in verify: ", e)
+            except:
                 return False
                 # JWT failure
 

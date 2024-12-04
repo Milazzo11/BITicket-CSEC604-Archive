@@ -4,7 +4,8 @@ API endpoints
 
 from app.API import API
 from app.API.models import *
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 
 
 app = FastAPI()
@@ -50,3 +51,16 @@ async def redeem_ticket(data: Auth[RedeemRequest]) -> Auth[RedeemResponse]:
 )
 async def verify_redemption(data: Auth[VerifyRequest]) -> Auth[VerifyResponse]:
     return API.verify_redemption(data)
+
+
+
+
+
+@app.exception_handler(HTTPException)
+async def exception_handler(_, exception: HTTPException) -> JSONResponse:
+    auth_error = API.exception_handler(exception)
+
+    return JSONResponse(
+        status_code=exception.status_code,
+        content=auth_error.to_dict()
+    )

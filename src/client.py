@@ -3,6 +3,7 @@ import jwt
 import requests
 from datetime import datetime
 import time
+from app.crypto.asymmetric import AKE
 
 
 class EventAPI:
@@ -18,6 +19,9 @@ class EventAPI:
         self.base_url = base_url
         self.private_key = self._load_key(private_key_path)
         self.public_key = self._load_key(public_key_path)
+
+        self.server_private_key = self._load_key("data\\priv.key")
+        self.server_public_key = self._load_key("data\\pub.key")
 
     def _load_key(self, key_path: str) -> str:
         """Loads the key from the specified file path."""
@@ -175,6 +179,17 @@ class EventAPI:
         signature = self._generate_jwt(data)
         payload = {"data": data, "public_key": self.public_key, "signature": signature}
         return self._post_request("verify", payload)
+    
+
+
+
+
+    def check_signature(self, res_json, public_key = None) -> bool:
+        """
+        """
+
+        cipher = AKE(private_key=self.server_private_key, public_key=self.server_public_key)##check public key needed if this was ever rly implemted
+        return cipher.verify(res_json["signature"], res_json["data"])
 
 
 # Example usage
