@@ -109,8 +109,7 @@ class Ticket(BaseModel):
         
 
     def verify(self):
-        if not ticket_db.verify(self.event_id, self.number):
-            raise HTTPException(403, detail="Ticket has not yet been redeemed")
+        return ticket_db.verify(self.event_id, self.number)
 
 
     def pack(self) -> str:

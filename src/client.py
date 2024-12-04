@@ -169,7 +169,7 @@ class EventAPI:
             "content": {
                 "event_id": event_id,
                 "ticket": ticket,
-                "check_public_key": check_public_key,
+                "check_public_key": self.public_key,##using same pubkey as server rn
             },
         }
         signature = self._generate_jwt(data)
@@ -216,7 +216,7 @@ if __name__ == "__main__":
     # )
 
     ##ticket = "3JHN1KA6f2GqC4u2X8F/9w==-DQ6zMVtp5wvC37Mv9b4uYMehGNx5QymArZyd7hor95r13WQXLTOLQgheg1n9iDk0wJ9CT84birKBPcwt+GDKVlXaEfTrn70CMxLqblou/WKXXPZ6nNsrqCjfZr4Fr39VxyLi0BuJuIQCDX2bHVn5Q42bVilD9GS+eTWgSy+KgcyVYrX9W5WBHVVkxxQXLrtpW+ZVrsJ7lw7GgwwNO9xb+XaztSnu69wRX9cN6JsSQd3NGQhboO4aDWHkZRnUbuiE76kZQ7XNXjqWbX8bznmSAIZk0gUV4NoIL6Yfn47xJ+naCU/DEitoUjzGPcXsSGw8dDyCIsAyGD4iJIc+LF9f0AaVWA6zJA1EKxpFMabg1LBJIvw80E4+56YgdlWW00lCZDiuq359HlTrEENJEFkR70v1UZdz9ZhIFJa6xcwppAdorvZBGBtg5P19PrkshiH4VzApdiPTljnUAxo6S3e+X3i+2eT3qPrt2iRVPu/nTpwHJSZ0wMTqtJtkh8G8usf/nh/0sPhCfif+45ZjfnQCu06lI96/MJgHE+VxBcR6ueHckppPw2s05f/fzRmFFdmm8d5rcg6QNoF5uOteXyUWR41q9css79yD8/X4m03TJDUppyqHkvgANmJmJQvCFoUznLtRkIR8aVVnZqC+8rCrRf5AAnZvDdYzV+67oIczZSv8N1g4uJevbCxDG7xd+pBXbxRGOYvp7F3J8dsaGBCTrZBwcDCzWYTmzXz42vpf8QwJUsm2HdrPIT868WxT70OEwnno0RNoOgJLzn7LoHEPway62MaLxtX5gG30CHRNl5lCJphrB4n5LKlt8MiS01+uVlEzWbjXC3GgXJfTsH/1wqCUezQDjOPbPmjzDk82NJ32/YDrBFWAjxxTWOVAhQ4zi1PWqTSeqJEYY6YpxUCHeLwlT6OrPqbsXsGic+fo9MVsbQ3dYf5uO9+YLM8wYXMQdGinLzh7spsX8SNZIc1ZSujq1BASOy8JjnpGx6OR8msmrWWDsTOp7WzmXCg1T3tuMzPmpGJGBB3yePx2o28dbngtZtXm1m1OwVfNYvGMJtyENbvwOpt/9S/mK09sa0D0IdME5VrhIEp5+c3ld/ZpvAiepwIRXmW9G7uAyxDyBK39QVsiTSar3jPC/57mHrbfEiogugqQWUQmNwXXmmgUj98AXbzLOUeIPk3kwUVcoxDXD5XQu2ps3QYEI/lxoR20"
-
+    """
     ticket = "Yk/YujnFzrvGqFY1VttF2g==-VubW/QwQm9M60j9KOWVOHuNlGa/Mom4s7qcicaIQP7F1E1dclz6n9DmGLHHc+xhUKl20YAPfV4KC3bOtXDOt2HlTlTX4HDI7MWzBZPBI45m/Npg8axi0589gKxm041RCJTzTQeBlUPmzUxto4+AVP3S51ESaper44rh8xmWqm2Hv26ZRmSRmDgwdVR98I4f4P0mhfUykk6j/fquiWRpTvz9b6Zl5e32pnZXdKcsAQzlKrtbdvpl95lmDP+5wwsuejSNHFwyHJjsaGEhv2F7b6HzmIxaBPHYpNEmE97uUBUyUZSxt2VEAHW/NnPXOhGtRbLvsS36Z7Vel3m87bfJGCBlXM/1bFG3FLc9U4yv3oqIAZMtsgMlHvP1KTTvu0MD0mg6CB2XNA8Z3FLO+O29QiAY9yw4kjn7QvZo8q2tmxruZnWlhwrLsaMkCE/NZkEtDrbC01pV7UtLGRjUy9+ZHTReLjk+AqQoEF+1Aw7cbWWJbd1Tk99T5KdjjhkI6K1T0Nry2ZNetF10AnYrXvXeWxXzBs+pv9OfJWNL/DjSUNW1h1qYQsjzW5bwxWZuaykl7pr+j9on4HyElrOpiUkbHt9itziGLiUtOtAw/+27wrzI2LBD/9NSqhjzjQw+wUSutu06QY93+DQ2IBOmwxPyy2OgokJhNjqQyHNoyu6kqWO42hOYYHfVME7wDQ83r+AR28qU+drg/cmAfTuOJiy1z+rQeBmJtIQHnvUfYwfkXLX9UlUBQG8hXrFVvgBTGSwFVQBiY0uCmxeYP1ginC6Ph0b27xoYVLUcluWLqavNHO8rgs6bmpFA+LNj4psGJSL9NzxQ2F0PjX6qHrLgIZ7hmzpQXUlHv864Cj0G9PusJKongTmjogWC+eU9txwboMEnBrmRzF2vMMcQey7dxGf0CcerHLmarksVcOjrKsuY9Y35+1EyOaSjpAyJvDe3McsoyxdiXDUb6QeC9OPPMc3Ly5DpGRw2fdkIWDfU4ipT9/sEoi84FhTHGIzN9VD0pZAScoAsDru+QIh2gYXSw/8wLskUNWVMnPHlckaOA500FY97mIjhmZH7dHa8w/56sKJ0E5JIrdAd/vm2TsnEeMfS6VJVJMEL4VzldSMiUDugiBtY2VmupvSbbr34tmv8UcYkOJ0LHt1z5hPa8Xkxr9mnXbnL05Y01eTYHeJUwz9C34ma12B6q0AoxGEAa9irj2atB"
 
     event_id = "794b0be3-53ad-455c-b9ea-2c7e61bc2188"  # Replace with your event ID
@@ -225,4 +225,16 @@ if __name__ == "__main__":
     print("redeem response", redeem_response)
     print(
         "Redeem Ticket Response:", redeem_response.status_code, redeem_response.json()
+    )
+    """
+
+
+    ticket = "Yk/YujnFzrvGqFY1VttF2g==-VubW/QwQm9M60j9KOWVOHuNlGa/Mom4s7qcicaIQP7F1E1dclz6n9DmGLHHc+xhUKl20YAPfV4KC3bOtXDOt2HlTlTX4HDI7MWzBZPBI45m/Npg8axi0589gKxm041RCJTzTQeBlUPmzUxto4+AVP3S51ESaper44rh8xmWqm2Hv26ZRmSRmDgwdVR98I4f4P0mhfUykk6j/fquiWRpTvz9b6Zl5e32pnZXdKcsAQzlKrtbdvpl95lmDP+5wwsuejSNHFwyHJjsaGEhv2F7b6HzmIxaBPHYpNEmE97uUBUyUZSxt2VEAHW/NnPXOhGtRbLvsS36Z7Vel3m87bfJGCBlXM/1bFG3FLc9U4yv3oqIAZMtsgMlHvP1KTTvu0MD0mg6CB2XNA8Z3FLO+O29QiAY9yw4kjn7QvZo8q2tmxruZnWlhwrLsaMkCE/NZkEtDrbC01pV7UtLGRjUy9+ZHTReLjk+AqQoEF+1Aw7cbWWJbd1Tk99T5KdjjhkI6K1T0Nry2ZNetF10AnYrXvXeWxXzBs+pv9OfJWNL/DjSUNW1h1qYQsjzW5bwxWZuaykl7pr+j9on4HyElrOpiUkbHt9itziGLiUtOtAw/+27wrzI2LBD/9NSqhjzjQw+wUSutu06QY93+DQ2IBOmwxPyy2OgokJhNjqQyHNoyu6kqWO42hOYYHfVME7wDQ83r+AR28qU+drg/cmAfTuOJiy1z+rQeBmJtIQHnvUfYwfkXLX9UlUBQG8hXrFVvgBTGSwFVQBiY0uCmxeYP1ginC6Ph0b27xoYVLUcluWLqavNHO8rgs6bmpFA+LNj4psGJSL9NzxQ2F0PjX6qHrLgIZ7hmzpQXUlHv864Cj0G9PusJKongTmjogWC+eU9txwboMEnBrmRzF2vMMcQey7dxGf0CcerHLmarksVcOjrKsuY9Y35+1EyOaSjpAyJvDe3McsoyxdiXDUb6QeC9OPPMc3Ly5DpGRw2fdkIWDfU4ipT9/sEoi84FhTHGIzN9VD0pZAScoAsDru+QIh2gYXSw/8wLskUNWVMnPHlckaOA500FY97mIjhmZH7dHa8w/56sKJ0E5JIrdAd/vm2TsnEeMfS6VJVJMEL4VzldSMiUDugiBtY2VmupvSbbr34tmv8UcYkOJ0LHt1z5hPa8Xkxr9mnXbnL05Y01eTYHeJUwz9C34ma12B6q0AoxGEAa9irj2atB"
+    utick = "sxZx0HSmSyMLCI3keoG/Cg==-o8LDvLiERNnOxcPNodWXJALzxQJoX/jobz42T+UtN4lEy42nb8pxYu6Y9+d5Po34rXhm02/dNzlUouuB1TxvNzJtcoxhsbw+diZaolhxWlw9a3cRWJ7qvbp5RHYYZGnrsm87FJn8T52u8SrB4q3wvAzeNjD1w7RzFBIGczxBw23bPyWztwokIg6hMFTcGUPzaZiMlmU+ql+E6Ft+4BBoKL9/3srjE3LBrxrGNFZVDbZ/Hon6F+kMnlrNmwhGgLZaJt/N5FVLE8cnSkj4hbbf+dcwDvEvosTEeJrIiBCLeq++kp7XnBeCcc/+s+vrjOIyXwTfwHKdYIlRsmwETOsqwXsHwNWFYcWX5SyobsaDQ1NIIvGxh/ae9/xDY8wteG33nf0LKwiLzBzr/NMi1GRxt9mU7hmJuXx7tYv/JFE0DocJ4LM9ge5IR0tSjnOkD/oBJHDMxrKL5DbxQGEwTq2Hk1yFrznsiuqdlZbNIJJr1NDENa/Eg+sh5Kgw3Kccy9RRPTktSmRzYFAA2D3ORktoNOLdmbCVNLqG8zvoNqOmDSubNFjdsOns/llvPfkT+klPdGMywEHYbihQjycknusjeoNYjh6ARN/1Wmc+zgmWTmskMbO8XpBqYvVdiW0rT/HqAJ+JawtizeD194wp3hG1P3QeHs9N9LtNraVOETVMDqz73BoVlYAYKKJfaF1PyYzxMaST6nOaIb3w1oT8yBUlKnv+VI5PB+d6hKtNI9OoEEdE+ib6dJ7/+GKbVIONnMb/jA4beZ0pVr522JSHf7je7fdwXhC7mOe4rp+zv9Lo6KqlWIYBgF3iMsCx186qZI86TNSgGXQqR/i1EjJrtvLaIor1PNL3aWafdmyEUSUiB8cjEY1daX+P7HFLN9PnuCxo3QXs5odG/IHie4lEoy/5IImVz+H3kbkFmfwc2U9OUzny7qbkhIcDbWXNXli+HnmjRNkWKZcoszJdoGXcm0bD3FFH6t7pQ8X5Ow9qpaykMUNwF3UKxO2jKxgt3GuAVJXBlxCyfT6IU94GKEkLx69rn28F81+liET+5UfrGLthY0q7st9CgklOSP+v2uhvAOH3uON+M3sYPsM2imW5UqHQFEciI0AOal5rLduFxP+HOzJV+7/kQJ46gtI+NyslD2kGSQNny1STDFLLLbx1kE4Y088wfNJJlTnMyoYV4RX+Zdi5T/ibuZigJObemaaXjX/r"
+   
+    event_id = "794b0be3-53ad-455c-b9ea-2c7e61bc2188"  # Replace with your event ID
+    # ticket = "3JHN1KA6f2GqC4u2X8F/9w==..."  # Replace with your ticket string
+    verify_response = api_client.verify(event_id=event_id, ticket=ticket, check_public_key=None)
+    print(
+        "Redeem Ticket Response:", verify_response.status_code, verify_response.json()
     )
