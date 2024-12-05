@@ -133,7 +133,7 @@ class Auth(BaseModel, Generic[T]):
                     status_code=400, detail="Duplicate request ID detected."
                 )
 
-            id_store[self.data.id] = now
+            id_store[self.data.id] = self.data.timestamp
             to_delete = []
 
             if next_cleanup <= now:
