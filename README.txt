@@ -6,6 +6,7 @@ NOTE: CURRENTLY, STORAGE SYSTEM USES BYTES, NOT BITSTRINGS
 
 (MAKE SURE ALL HTTP STATUS CODES ACTUALLY MAKE THE MOST SENSE)
 (ADD BETTER ERROR HANDLING TO DB MODULE -- SCRATCH THAT, THE ENTIRE CODEBASE)
+(PROB MAKE AKE OBJECT IN AUTH GLOBAL BASED ON PROFILING... AND LOOK FOR OTHER OPTIMIZATIONS)
 
 I have aythenticated errors now... maybe in future only send auth errors for some status codes? (to help prevent availability attacks)
 [prob on certain special status codes -- 429]
