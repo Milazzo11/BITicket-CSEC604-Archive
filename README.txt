@@ -1,7 +1,4 @@
-BITicket archive for the final CSEC-604 project deliverable.
-[documentation and other improvements are still needed; however, the core functionality is implemented]
+NOTE: THIS IS A TEMPORARY REPOSITORY
 
-Future updates to this codebase made in my personal time can be found at: Milazzo11/BITicket
-(which may or may not exist at this time)
-
-Thank you for a great semester!
+ONCE COMPLETE, THE NEW VERSION OF THE "Yellowtail Zero-storage Encrypted Ticket Authentication (YT-ZETA)" WILL BE FOUND AT: Milazzo11/Yellowtail
+(if anybody besides me actually looks at the projects I make lol)
